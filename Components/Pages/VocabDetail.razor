@@ -1,0 +1,141 @@
+﻿@page "/Vocab/{Id:int}"
+@rendermode InteractiveServer
+@using VocabBuilder.ViewModels
+@using VocabBuilder.ViewModels.Vocab
+@using static VocabBuilder.Shared.Enums
+@using static VocabBuilder.Shared.Constants
+@inherits BasePage<VocabViewModel>
+
+<PageTitle>Vocab Detail</PageTitle>
+
+@if (IsLoading)
+{
+    <FluentOverlay @bind-Visible=@IsLoading Transparent="false" Dismissable="false">
+        <FluentProgressRing />
+    </FluentOverlay>
+}
+else
+{
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+            <FluentStack VerticalAlignment="VerticalAlignment.Center">
+                <FluentLabel Typo="Typography.H4">
+                    Vocab Detail
+                </FluentLabel>
+                <FluentIcon Value="@(new Icons.Regular.Size16.Info())" />
+            </FluentStack>
+            <FluentStack VerticalAlignment="VerticalAlignment.Center" Width="auto">
+                <FluentButton OnClick="() => Navigation.NavigateToVocabEdit(Id)"
+                              Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.Edit())"
+                              Style="min-width:80px">
+                    Edit
+                </FluentButton>
+
+                <FluentButton OnClick="OpenDeleteDialogAsync"
+                              Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.Delete())"
+                              BackgroundColor="var(--error)"
+                              Style="min-width:80px">
+                    Delete
+                </FluentButton>
+            </FluentStack>
+        </FluentStack>
+
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+            <FluentStack VerticalAlignment="VerticalAlignment.Bottom">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalGap="0" Style="flex:1;">
+                    <FluentTextField @bind-Value="@ViewModel.Detail.Word"
+                                     Name="word" Label="Word"
+                                     Appearance="FluentInputAppearance.Filled"
+                                     ReadOnly />
+                </FluentStack>
+            </FluentStack>
+
+            <FluentStack>
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalGap="0">
+                    <FluentTextField @bind-Value="@ViewModel.Detail.WordType"
+                                     Name="WordType" Label="Word type"
+                                     Appearance="FluentInputAppearance.Filled"
+                                     ReadOnly />
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalGap="0">
+                    <FluentTextField @bind-Value="@ViewModel.Detail.Phonetic"
+                                     Name="phonetic" Label="Phonetic"
+                                     Appearance="FluentInputAppearance.Filled"
+                                     ReadOnly />
+                </FluentStack>
+            </FluentStack>
+
+            <FluentStack>
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalGap="0">
+                    <FluentTextField @bind-Value="@ViewModel.Detail.Meaning"
+                                     Name="meaning" Label="Meaning"
+                                     Appearance="FluentInputAppearance.Filled"
+                                     ReadOnly />
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalGap="0">
+                    <FluentTextField @bind-Value="@ViewModel.Detail.MaskedWord"
+                                     Name="maskedWord" Label="Masked word"
+                                     Appearance="FluentInputAppearance.Filled"
+                                     ReadOnly />
+                </FluentStack>
+            </FluentStack>
+
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalGap="0">
+                <FluentTextField @bind-Value="@ViewModel.Detail.Definition"
+                                 Name="definition" Label="Definition"
+                                 Appearance="FluentInputAppearance.Filled"
+                                 ReadOnly />
+            </FluentStack>
+
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch" VerticalGap="0">
+                <FluentTextField @bind-Value="@ViewModel.Detail.Example"
+                                 Name="example" Label="Example"
+                                 Appearance="FluentInputAppearance.Filled"
+                                 ReadOnly />
+            </FluentStack>
+
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="6">
+                <FluentLabel>
+                    Attachments
+                </FluentLabel>
+                <FluentStack VerticalAlignment="VerticalAlignment.Stretch">
+                    @foreach (var inputFile in ViewModel.Detail.InputFiles)
+                    {
+                        <FluentInputFile Disabled Style="position:relative;flex:1;padding:36px;border-radius:4px;opacity:1;">
+                            <ChildContent>
+                                @{
+                                    if (!string.IsNullOrEmpty(inputFile.FilePath))
+                                    {
+                                        switch (inputFile.FileType)
+                                        {
+                                            case FileType.Audio:
+                                                <audio controls>
+                                                    <source src="@inputFile.FilePath" />
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                                break;
+                                            case FileType.Image:
+                                                <img src="@inputFile.FilePath" style="max-width: 400px;" />
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+                                            <FluentIcon Value="@inputFile.Icon" />
+                                            <FluentLabel>
+                                                @inputFile.GetPlaceholder()
+                                            </FluentLabel>
+                                        </FluentStack>
+                                    }
+                                }
+                            </ChildContent>
+                        </FluentInputFile>
+                    }
+                </FluentStack>
+            </FluentStack>
+        </FluentStack>
+    </FluentStack>
+}

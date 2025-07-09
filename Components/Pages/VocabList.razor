@@ -1,0 +1,75 @@
+﻿@page "/Vocab"
+@rendermode InteractiveServer
+@using VocabBuilder.ViewModels
+@using VocabBuilder.ViewModels.Vocab
+@inherits BasePage<VocabViewModel>
+
+<PageTitle>Vocab List</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical">
+    <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center">
+            <FluentLabel Typo="Typography.H4">
+                Vocab List
+            </FluentLabel>
+        </FluentStack>
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" Width="auto">
+            <FluentButton Appearance="Appearance.Accent"
+                          IconStart="@(new Icons.Regular.Size16.Add())"
+                          OnClick="Navigation.NavigateToVocabAdd">
+                Add vocab
+            </FluentButton>
+        </FluentStack>
+    </FluentStack>
+
+    <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center">
+            <FluentTextField @bind-Value="ViewModel.Search.Word" Label="Word" Style="flex:1;" />
+        </FluentStack>
+        <FluentStack Width="auto">
+            <FluentButton IconStart="@(new Icons.Regular.Size16.Search())" Loading="IsLoading" OnClick="RefreshDataAsync">
+                Search
+            </FluentButton>
+            <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())" Disabled="IsLoading" OnClick="ExportAsync">
+                Export
+            </FluentButton>
+        </FluentStack>
+    </FluentStack>
+
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentPaginator State="_pagination" Style="width:100%;margin-top:0" />
+        <FluentDataGrid @ref="_dataGrid"
+                        Pagination="_pagination"
+                        TGridItem="VocabDetailViewModel"
+                        Items="ViewModel.Result.Details.AsQueryable()"
+                        RefreshItems="RefreshItemsAsync"
+                        Loading="IsLoading"
+                        GenerateHeader="GenerateHeaderOption.Sticky"
+                        DisplayMode="DataGridDisplayMode.Table"
+                        OnRowDoubleClick="(r) => Navigation.NavigateToVocabDetail(r.Item!.Id)"
+                        AutoFit="true"
+                        ShowHover="true"
+                        Style="width:100%;">
+            <ChildContent>
+                <PropertyColumn Property="@(c => c.Word)" />
+                <PropertyColumn Property="@(c => c.WordType)" />
+                <PropertyColumn Property="@(c => c.Phonetic)" />
+                <PropertyColumn Property="@(c => c.MaskedWord)" />
+                <PropertyColumn Property="@(c => c.Meaning)" />
+                <TemplateColumn Title="Actions" Align="@Align.End">
+                    <FluentButton IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="() => Navigation.NavigateToVocabEdit(context.Id)" />
+                    <FluentButton IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="() => OpenDeleteDialogAsync(context)" />
+                </TemplateColumn>
+            </ChildContent>
+            <EmptyContent>
+                <FluentStack Orientation="Orientation.Horizontal"
+                             VerticalAlignment="VerticalAlignment.Center"
+                             HorizontalAlignment="HorizontalAlignment.Center"
+                             HorizontalGap="10">
+                    <FluentIcon Value="@(new Icons.Filled.Size24.Crown())" Color="@Color.Accent" />
+                    <div>Nothing to see here. Carry on!</div>
+                </FluentStack>
+            </EmptyContent>
+        </FluentDataGrid>
+    </FluentStack>
+</FluentStack>
